@@ -29,10 +29,10 @@
       when: action == "creation"
       register: ec2_instance_out
 
-    - name: Print EC2 instance output
-      ansible.builtin.debug:
-        msg: "{{ ec2_instance_out }}"
-      when: action == "creation"
+    # - name: Print EC2 instance output
+    #   ansible.builtin.debug:
+    #     msg: "{{ ec2_instance_out }}"
+    #   when: action == "creation"
 
     - name: get private and public ip from EC2 output
       ansible.builtin.set_fact:
@@ -54,7 +54,7 @@
       amazon.aws.route53:
         state: present
         zone: "{{ domain_name }}"
-        record: "{{ item.item }}-{{ deploy_env }}.{{ domain_name }}"     # -- mongodb-dev-dasarikrishna.online
+        record: "{{ item.item }}-{{ deploy_env }}.{{ domain_name }}" # -- mongodb-dev-dasarikrishna.online
         ttl: 1
         type: A
         value: "{{ private_ip }}"
@@ -65,13 +65,12 @@
       amazon.aws.route53:
         state: present
         zone: "{{ domain_name }}"
-        record: "{{ roboshop }}-{{ deploy_env }}.{{ domain_name }}"     # -- roboshop-dev-dasarikrishna.online
+        record: "{{ roboshop }}-{{ deploy_env }}.{{ domain_name }}" # -- roboshop-dev-dasarikrishna.online
         ttl: 1
         type: A
         value: "{{ public_ip }}"
       loop: "{{ ec2_instance_out.results }}"
       when: action == "creation" and item.item == "frontend"
-
 
     # --- Delete EC2 instance and Route 53 Records based on instance name
     - name: Destroy EC2 instance
@@ -100,8 +99,4 @@
         type: A
         ttl: 1
       loop: "{{ instances }}"
-      when: action == "destroy" and item == "frontend"    
-
-
-
-
+      when: action == "destroy" and item == "frontend"

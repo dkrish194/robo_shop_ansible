@@ -1,6 +1,6 @@
 ---
 - name: Mongodb playbook
-  hosts: monggodb
+  hosts: mongodb
   become: true
 
   tasks:
