@@ -1,0 +1,28 @@
+---
+- name: Mongodb playbook
+  hosts: monggodb
+  become: true
+
+  tasks:
+  - name: Copy Repo File to /etc/yum.repos.d
+    ansible.builtin.copy:
+      src: mongodb.repo
+      dest: /etc/yum.repos.d/
+
+  - name: Install Mongodb package
+    ansible.builtin.dnf:
+      name: mongodb-org
+      state: present
+
+  - name: Replace 127.0.0.0 to 0.0.0.0
+    ansible.builtin.replace:
+      path: /etc/mongod.conf
+      regexp: "127.0.0.1"
+      replace: "0.0.0.0"
+
+  - name: Start mongodb service
+    ansible.builtin.service:
+      name: mongodb
+      state: restarted
+      enabled: true
+      
